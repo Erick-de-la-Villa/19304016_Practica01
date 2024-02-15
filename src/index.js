@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const taskRepository = require('./taskRepository');
 //cambio de feature 2
 //cambio para feature 3
 const app = express();
@@ -14,20 +15,14 @@ let tasks = [
 
 // Get all tasks
 app.get('/tasks', (req, res) => {
+  taskRepository.getAll();
   res.json(tasks);
 });
-
-// Get all tasks
-app.get('/issues', (req, res) => {
-  res.json(tasks);
-});
-
-//fix issue 1
 
 // Get a specific task
 app.get('/tasks/:id', (req, res) => {
   const taskId = parseInt(req.params.id);
-  const task = tasks.find((t) => t.id === taskId);
+  const task = taskRepository.getById(taskId);
 
   if (task) {
     res.json(task);
@@ -39,8 +34,7 @@ app.get('/tasks/:id', (req, res) => {
 // Create a new task
 app.post('/tasks', (req, res) => {
   const newTask = req.body;
-  newTask.id = tasks.length + 1;
-  tasks.push(newTask);
+  taskRepository.createTask(newTask);
   res.status(201).json(newTask);
 });
 
@@ -48,11 +42,10 @@ app.post('/tasks', (req, res) => {
 app.put('/tasks/:id', (req, res) => {
   const taskId = parseInt(req.params.id);
   const updatedTask = req.body;
-  const index = tasks.findIndex((t) => t.id === taskId);
+  const task = taskRepository.updateTask(taskId, updatedTask);
 
-  if (index !== -1) {
-    tasks[index] = { ...tasks[index], ...updatedTask };
-    res.json(tasks[index]);
+  if (task == null) {
+    res.json(task);
   } else {
     res.status(404).json({ error: 'Task not found' });
   }
@@ -61,7 +54,7 @@ app.put('/tasks/:id', (req, res) => {
 // Delete a task
 app.delete('/tasks/:id', (req, res) => {
   const taskId = parseInt(req.params.id);
-  tasks = tasks.filter((t) => t.id !== taskId);
+  taskRepository.deleteTask(taskId);
   res.sendStatus(204);
 });
 
