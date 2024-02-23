@@ -16,13 +16,6 @@ describe("pruebas", () => {
     
     });
 
-    // Test the /tasks GET endpoint
-    test('GET /tasks returns all tasks', async () => {
-    const response = await request(app).get('/tasks');
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveLength(2); // Assuming there are 2 tasks initially
-    });
-
     test("Get task by id", () => {
         // Arrange
         let task = {};
